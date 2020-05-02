@@ -1,5 +1,6 @@
-var typeChart = "confirmed"
-var date = "2020-1-22";
+// var typeChart = "confirmed"
+// var date = "2020-1-22";
+
 function formatDate(date) {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
@@ -20,12 +21,8 @@ function formatDate(date) {
 //     });
 // }
 
-function selectType(typeS) { // ,confirmed, deaths, recovered
-    typeChart = typeS
-    date = "2020-1-22"
-}
-
-function chart(allData) {
+function chart(allData, typeChart = "confirmed") {
+    var date = "2020-1-22";
     // Themes begin
     am4core.useTheme(am4themes_animated);
     // Themes end
@@ -60,7 +57,7 @@ function chart(allData) {
         }
     })
 
-    var stepDuration = 1;
+    var stepDuration = 500;
 
     var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
     categoryAxis.renderer.grid.template.location = 0;
@@ -163,4 +160,33 @@ function chart(allData) {
         }, 2000)
     })
 
+    chart.exporting.menu = new am4core.ExportMenu();
+    chart.exporting.menu.align = "right";
+    chart.exporting.menu.verticalAlign = "top";
+
+    chart.exporting.menu.items = [{
+        "label": "...   ",
+        "menu": [
+          { "type": "png", "label": "PNG", "options": { "quality": 1 } },
+          { "type": "json", "label": "JSON", "options": { "indent": 2, "useTimestamps": true } },
+          { "type": "gif", "label": "Gif", "options": { "quality": 1 } },
+          { "label": "Print", "type": "print" }
+        ]
+    }];
+
 }; // end am4core.ready()
+
+function savePDF() {
+    chart.exporting.getImage("png")
+    // Promise.all([
+    //   chart.exporting.pdfmake,
+    //   chart.exporting.getImage("png"),
+    // ], function(res) {
+    //     console.log(res)
+    //    // pdfmake and chart snapshots are ready
+    //    // res[0] contains pdfmake instance
+    //    // res[1] contains shapshot of chart 1
+    //    // etc.
+    //    let pdfMake = res[0];
+    // });
+}

@@ -1,3 +1,4 @@
+var all_data
 // Get data
 function makeHttpObject() {
     try {return new XMLHttpRequest();}
@@ -26,7 +27,6 @@ function converData(data) {
 }
 
 function getData() {
-    console.log('get nha')
     var request = makeHttpObject(), data;
     request.open("GET", "https://pomber.github.io/covid19/timeseries.json", true);
     request.send(null);
@@ -42,7 +42,8 @@ function getData() {
             }
 
             data = JSON.parse(data);
-            chart(converData(data))
+            all_data = converData(data)
+            chart(all_data)
         }
     };
 }
@@ -54,9 +55,15 @@ if(typeof(Storage) !== "undefined" && localStorage.covid) {
     if(com > 60*60*1*1000) {
         getData()
     } else {
-        chart(converData(data))
+        all_data = converData(data)
+        chart(all_data)
     }
     
 } else {
     getData()
+}
+
+function selectType(typeS) { // ,confirmed, deaths, recovered
+    document.getElementById("text").innerHTML = typeS
+    chart(all_data, typeS)
 }
