@@ -21,13 +21,14 @@ function formatDate(date) {
 //     });
 // }
 
-function chart(allData, typeChart = "confirmed") {
-    var date = "2020-1-22";
+function chart(allData, typeChart = "samari") {
+    var date = "2020-6-1";
     // Themes begin
     am4core.useTheme(am4themes_animated);
     // Themes end
     var chart = am4core.create("chartdiv", am4charts.XYChart);
     chart.padding(40, 40, 40, 40);
+    chart.responsive.enabled = true;
 
     chart.numberFormatter.bigNumberPrefixes = [
         { "number": 1e+3, "suffix": "K" },
@@ -57,14 +58,19 @@ function chart(allData, typeChart = "confirmed") {
         }
     })
 
-    var stepDuration = 500;
+    var stepDuration = 1000;
 
     var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
+
     categoryAxis.renderer.grid.template.location = 0;
     categoryAxis.dataFields.category = "network";
     categoryAxis.renderer.minGridDistance = 1;
     categoryAxis.renderer.inversed = true;
     categoryAxis.renderer.grid.template.disabled = true;
+    // var label = categoryAxis.renderer.labels.template;
+    // label.wrap = true;
+    // label.maxWidth = 100;
+    
 
     var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
     valueAxis.min = 0;
@@ -84,8 +90,8 @@ function chart(allData, typeChart = "confirmed") {
 
     var labelBullet = series.bullets.push(new am4charts.LabelBullet())
     labelBullet.label.horizontalCenter = "left";
-    labelBullet.label.text = "{values.valueX.workingValue.formatNumber('#.')}";
-    // labelBullet.label.textAlign = "right";
+    labelBullet.label.text = "{values.valueX.workingValue.formatNumber('#,###.')}";
+    labelBullet.label.textAlign = "right";
     labelBullet.label.dx = 10;
     labelBullet.label.hideOversized = false;
     labelBullet.label.truncate = false;
@@ -138,11 +144,15 @@ function chart(allData, typeChart = "confirmed") {
             chart.invalidateRawData();
             label.text = date;
 
+            console.log(categoryAxis.dataItems.length)
+
             var end = itemsWithNonZero / categoryAxis.dataItems.length
             if(end > 0.06) {
                 end = 0.06;
             }
-            categoryAxis.zoom({ start: 0, end: end });
+
+            console.log(end)
+            categoryAxis.zoom({ start: 0, end: 1 });
         } else {
             stop()
         }
@@ -178,15 +188,4 @@ function chart(allData, typeChart = "confirmed") {
 
 function savePDF() {
     chart.exporting.getImage("png")
-    // Promise.all([
-    //   chart.exporting.pdfmake,
-    //   chart.exporting.getImage("png"),
-    // ], function(res) {
-    //     console.log(res)
-    //    // pdfmake and chart snapshots are ready
-    //    // res[0] contains pdfmake instance
-    //    // res[1] contains shapshot of chart 1
-    //    // etc.
-    //    let pdfMake = res[0];
-    // });
 }
